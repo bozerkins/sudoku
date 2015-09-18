@@ -8,8 +8,8 @@ for($j = 1; $j < 10; $j++) {
     }
     $grid[] = $box;
 }
-draw($grid);
-exit;
+// draw($grid);
+// exit;
 
 
 // sudoku solver
