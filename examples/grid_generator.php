@@ -10,14 +10,23 @@ $grid->populate($sequence);
 
 $table = new \Sudoku\Table\Table($grid);
 $table->draw();
+$table = new \Sudoku\Table\Table($grid);
+$table->draw(true);
+
 
 $probabilityGrid = new \Sudoku\Grid\Grid;
 $probabilityGrid->populate($sequence);
 
+// $technique = new \Sudoku\Solver\Technique\SingleCandidateTechnique;
+// $technique->fillWhatYouCan($probabilityGrid);
+//
+// $table = new \Sudoku\Table\Table($probabilityGrid);
+// $table->draw(true);
+
 $solver = new \Sudoku\Solver\Solver;
 $solver->setGrid($probabilityGrid);
-// $solver->addTechnique(new \Sudoku\Solver\Technique\SinglePositionTechnique);
-$solver->addTechnique(new \Sudoku\Solver\Technique\SingleCandidateTechnique);
+$solver->addTechnique(new \Sudoku\Solver\Technique\SinglePositionTechnique);
+// $solver->addTechnique(new \Sudoku\Solver\Technique\SingleCandidateTechnique);
 $solver->solve();
 
 $table = new \Sudoku\Table\Table($probabilityGrid);

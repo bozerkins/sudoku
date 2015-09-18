@@ -28,6 +28,24 @@ class Solver
 
 	public function solve()
 	{
+		$techniques = $this->techniques;
+		// calculate what you can separately with each technique
+		foreach($techniques as $technique) {
+			$this->applyGridLoop(function($grid) {
+				$technique->fillWhatYouCan($grid);
+			});
+		}
+
+		// calculate with each technique sequentially
+		$this->applyGridLoop(function($grid) use ($techniques) {
+			foreach($techniques as $technique) {
+				$technique->fillWhatYouCan($grid);
+			}
+		});
+	}
+
+	protected function applyGridLoop(\Closure $callback)
+	{
 		$filled = null;
 		$techniquesFilled = null;
 		$variations = null;
@@ -37,7 +55,7 @@ class Solver
 			$filled = count($this->getGrid()->getEmptyCells());
 			$variations = count($this->getGrid()->getEmptyCellVariations());
 
-			$this->applyTechniques();
+			$callback($this->getGrid());
 
 			$techniquesFilled = count($this->getGrid()->getEmptyCells()) - $filled;
 			if (!$techniquesFilled) {

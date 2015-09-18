@@ -10,11 +10,27 @@ class Grid
 
 	public function populate(array $valueSequence)
 	{
+		// reset sequence
 		$this->sequence = array();
-		foreach($valueSequence as $value) {
+
+		// populate with empty cells
+		foreach(array_values($valueSequence) as $index => $value) {
+			$ver = $index % $this->getSize();
+			$hor = ($index - $ver) / $this->getSize();
+
 			$cell = new Cell();
 			$cell->set($value);
+			$cell->setHor($hor);
+			$cell->setVer($ver);
+
 			$this->sequence[] = $cell;
+		}
+		// populate with possible variations
+		foreach($this->getEmptyCells() as $index => $cell) {
+			$variations = $this->getFreeItems($cell->getHor(), $cell->getVer()) ?: array();
+			foreach($variations as $variation) {
+				$cell->addVariation($variation);
+			}
 		}
 		return $this;
 	}
@@ -23,6 +39,32 @@ class Grid
 	{
 		$this->sequence = null;
 		return $this;
+	}
+
+	protected function getTakenItems($hor, $ver) {
+
+		// get row numbers
+		$rowItems = array_map(function($cell){ return $cell->get(); }, $this->getHorCells($hor));
+		$rowItems = array_values(array_filter($rowItems));
+
+		// get cell numbers
+		$cellItems = array_map(function($cell){ return $cell->get(); }, $this->getVerCells($ver));
+		$cellItems = array_values(array_filter($cellItems));
+
+		// get block(segment) numbers
+		$blockItems = array_map(function($cell){ return $cell->get(); }, $this->getBlockCells($this->getBlockNumber($hor, $ver)));
+		$blockItems = array_values(array_filter($blockItems));
+
+		$items = array_values(array_unique(array_merge($rowItems, $cellItems, $blockItems)));
+		return $items;
+	}
+
+	protected function getFreeItems($hor, $ver)
+	{
+		$allitems = $this->getPossibleValues();
+		$taken = $this->getTakenItems($hor, $ver);
+		$freeitems = array_values(array_diff($allitems, $taken));
+		return $freeitems;
 	}
 
 	public function getEmptyCellVariations()
@@ -67,21 +109,25 @@ class Grid
 		return $sequence;
 	}
 
-	public function getBlockCells($hor, $ver)
+	public function getBlockCells($number)
 	{
+		$ver = ($number % $this->getBlockSize()) * $this->getBlockSize();
+		$hor = ($number - ($number % $this->getBlockSize()));
+
 		$sequence = array();
-		foreach($this->getBlockSegment($hor) as $horIndex) {
-			foreach($this->getBlockSegment($ver) as $verIndex) {
+		foreach(range($hor, $hor + $this->getBlockSize() - 1) as $horIndex) {
+			foreach(range($ver, $ver + $this->getBlockSize() - 1) as $verIndex) {
 				$sequence[] = $this->getCell($horIndex, $verIndex);
 			}
 		}
 		return $sequence;
 	}
 
-	protected function getBlockSegment($index)
+	public function getBlockNumber($hor, $ver)
 	{
-	    $segment = intval($index / $this->getBlockSize());
-	    return range($segment * $this->getBlockSize(), $segment * $this->getBlockSize() + ( $this->getBlockSize() - 1));
+		$horSegment = intval($hor / $this->getBlockSize());
+		$verSegment = intval($ver / $this->getBlockSize());
+		return $horSegment * $this->getBlockSize() + $verSegment;
 	}
 
 	public function getCell($hor, $ver)
@@ -99,6 +145,11 @@ class Grid
 		}
 		$this->sequence[$this->getSequencePosition($hor, $ver)]->set($value);
 		return $this;
+	}
+
+	public function getPossibleValues()
+	{
+		return range(1, $this->getSize());
 	}
 
 	public function getSequenceSize()
