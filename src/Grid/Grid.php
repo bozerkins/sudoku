@@ -111,14 +111,63 @@ class Grid
 
 	public function getBlockCells($number)
 	{
-		$ver = ($number % $this->getBlockSize()) * $this->getBlockSize();
-		$hor = ($number - ($number % $this->getBlockSize()));
-
 		$sequence = array();
-		foreach(range($hor, $hor + $this->getBlockSize() - 1) as $horIndex) {
-			foreach(range($ver, $ver + $this->getBlockSize() - 1) as $verIndex) {
+		foreach($this->getBlockHors($number) as $horIndex) {
+			foreach($this->getBlockVers($number) as $verIndex) {
 				$sequence[] = $this->getCell($horIndex, $verIndex);
 			}
+		}
+		return $sequence;
+	}
+
+	public function filterCells(array $cells, array $filterCells)
+	{
+		return array_filter($cells, function($cell) use($filterCells) {
+			foreach($filterCells as $filterCell) {
+				if ($cell->getHor() === $filterCell->getHor() && $cell->getVer() === $filterCell->getVer()) {
+					return false;
+				}
+			}
+			return true;
+		});
+	}
+
+	public function filterEmptyCells(array $cells)
+	{
+		return array_filter($cells, function($cell) {
+			return $cell->isEmpty();
+		});
+	}
+
+	public function getBlockHors($number)
+	{
+		$minVer = ($number % $this->getBlockSize()) * $this->getBlockSize();
+		$minHor = ($number - ($number % $this->getBlockSize()));
+		return range($minHor, $minHor + $this->getBlockSize() - 1);
+	}
+
+	public function getBlockVers($number)
+	{
+		$minVer = ($number % $this->getBlockSize()) * $this->getBlockSize();
+		$minHor = ($number - ($number % $this->getBlockSize()));
+
+		return range($minVer, $minVer + $this->getBlockSize() - 1);
+	}
+
+	public function getBlockHorCells($number, $hor)
+	{
+		$sequence = array();
+		foreach($this->getBlockHors($number) as $verIndex) {
+			$sequence[] = $this->getCell($hor, $verIndex);
+		}
+		return $sequence;
+	}
+
+	public function getBlockVerCells($number, $ver)
+	{
+		$sequence = array();
+		foreach($this->getBlockVers($number) as $horIndex) {
+			$sequence[] = $this->getCell($horIndex, $ver);
 		}
 		return $sequence;
 	}
@@ -144,6 +193,25 @@ class Grid
 			throw new \ErrorException('sequence was not populated');
 		}
 		$this->sequence[$this->getSequencePosition($hor, $ver)]->set($value);
+		return $this;
+	}
+
+	public function setCellValue(Cell $cell, $value)
+	{
+		$cell->set($value);
+
+		foreach($this->getHorCells($cell->getHor()) as $item) {
+			$item->removeVariation($value);
+		}
+
+		foreach($this->getVerCells($cell->getVer()) as $item) {
+			$item->removeVariation($value);
+		}
+
+		foreach($this->getBlockCells($this->getBlockNumber($cell->getHor(), $cell->getVer())) as $item) {
+			$item->removeVariation($value);
+		}
+
 		return $this;
 	}
 

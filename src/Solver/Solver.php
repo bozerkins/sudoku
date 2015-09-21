@@ -31,7 +31,7 @@ class Solver
 		$techniques = $this->techniques;
 		// calculate what you can separately with each technique
 		foreach($techniques as $technique) {
-			$this->applyGridLoop(function($grid) {
+			$this->applyGridLoop(function($grid) use ($technique) {
 				$technique->fillWhatYouCan($grid);
 			});
 		}

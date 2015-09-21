@@ -25,5 +25,13 @@ $list[1] = array(
 	null,1,null,null,null
 );
 
+// tricky sequence
+$list[2] = array(
+	null,3,null,null,4,7,null,null,null,6,null,null,null,2,null,null,7,9,null,null,2,1,
+	null,null,null,null,null,3,null,null,2,7,null,6,null,null,2,null,null,8,null,5,null,
+	null,1,null,null,8,null,6,1,null,null,5,null,null,null,null,null,3,2,null,null,5,2,
+	null,null,1,null,null,null,3,null,null,null,7,8,null,null,4,null
+);
+
 
 return $list;

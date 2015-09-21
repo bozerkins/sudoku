@@ -8,33 +8,31 @@ class SingleCandidateTechnique implements TechniqueInterface
 {
 	public function fillWhatYouCan(Grid $grid)
 	{
-		$values = array();
-
-		foreach($grid->getEmptyCells() as $cell) {
-			$variations = $cell->getVariations();
-			if (count($variations) === 1) {
-				$variation = array_pop(array_values($variations));
-				$cell->set($variation);
-
-				$value = array();
-				$value['hor'] = $cell->getHor();
-				$value['ver'] = $cell->getVer();
-				$value['variation'] = $cell->get();
-				$values[] = $value;
-			}
+		for($i = 0; $i < $grid->getSize(); $i++) {
+			$this->runVariationsAnalysis($grid->getHorCells($i), $grid);
 		}
+		for($i = 0; $i < $grid->getSize(); $i++) {
+			$this->runVariationsAnalysis($grid->getVerCells($i), $grid);
+		}
+		for($i = 0; $i < $grid->getSize(); $i++) {
+			$this->runVariationsAnalysis($grid->getBlockCells($i), $grid);
+		}
+	}
 
-		foreach($values as $value) {
-			foreach($grid->getHorCells($value['hor']) as $cell) {
-				$cell->removeVariation($value['variation']);
-			}
-
-			foreach($grid->getVerCells($value['ver']) as $cell) {
-				$cell->removeVariation($value['variation']);
-			}
-
-			foreach($grid->getBlockCells($grid->getBlockNumber($value['hor'], $value['ver'])) as $cell) {
-				$cell->removeVariation($value['variation']);
+	protected function runVariationsAnalysis(array $cells, Grid $grid)
+	{
+		$variations = array_reduce($cells, function($result, $cell) {
+			$result = array_merge($result, $cell->getVariations());
+			return $result;
+		}, array());
+		$variationsCounts = array_filter(array_count_values($variations), function($item) {
+			return $item === 1;
+		}) ?: array();
+		foreach($variationsCounts as $variation => $count) {
+			foreach($cells as $cell) {
+				if (in_array($variation, $cell->getVariations())) {
+					$grid->setCellValue($cell, $variation);
+				}
 			}
 		}
 	}

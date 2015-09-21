@@ -17,25 +17,14 @@ class SinglePositionTechnique implements TechniqueInterface
 				$cell->set($variation);
 
 				$value = array();
-				$value['hor'] = $cell->getHor();
-				$value['ver'] = $cell->getVer();
+				$value['cell'] = $cell;
 				$value['variation'] = $cell->get();
 				$values[] = $value;
 			}
 		}
 
 		foreach($values as $value) {
-			foreach($grid->getHorCells($value['hor']) as $cell) {
-				$cell->removeVariation($value['variation']);
-			}
-
-			foreach($grid->getVerCells($value['ver']) as $cell) {
-				$cell->removeVariation($value['variation']);
-			}
-
-			foreach($grid->getBlockCells($grid->getBlockNumber($value['hor'], $value['ver'])) as $cell) {
-				$cell->removeVariation($value['variation']);
-			}
+			$grid->setCellValue($value['cell'], $value['variation']);
 		}
 	}
 }
