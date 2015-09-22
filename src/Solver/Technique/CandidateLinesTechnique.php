@@ -8,43 +8,47 @@ class CandidateLinesTechnique implements TechniqueInterface
 {
 	public function fillWhatYouCan(Grid $grid)
 	{
-		// for($i = 0; $i < $grid->getSize(); $i++) {
-		$i = 8;
+		// 1. take a row or a column
+		// 2. get some variation numbers
+		// 3. check that numbers exists only within the row
+		// 4. clear other blocks for the same variations
+		for($i = 0; $i < $grid->getSize(); $i++) {
 			foreach($grid->getBlockHors($i) as $hor) {
-				$blockHorCells = $grid->getBlockHorCells($i, $hor);
-				$horCells = $grid->getHorCells($hor);
-				$this->runPackAnalysis($blockHorCells, $horCells, $grid);
+				$blockLineCells = $grid->getBlockHorCells($i, $hor);
+				$blockCells = $grid->getBlockCells($i);
+				$lineCells = $grid->getHorCells($hor);
+				$this->runPackAnalysis($blockLineCells, $blockCells, $lineCells, $grid);
 			}
-			foreach($grid->getBlockVers($i) as $hor) {
-				$blockHorCells = $grid->getBlockVerCells($i, $hor);
-				$horCells = $grid->getVerCells($hor);
-				$this->runPackAnalysis($blockHorCells, $horCells, $grid);
+			foreach($grid->getBlockVers($i) as $ver) {
+				$blockLineCells = $grid->getBlockVerCells($i, $ver);
+				$blockCells = $grid->getBlockCells($i);
+				$lineCells = $grid->getVerCells($ver);
+				$this->runPackAnalysis($blockLineCells, $blockCells, $lineCells, $grid);
 			}
-		// }
+		}
 	}
 
-	public function runPackAnalysis(array $definitiveCells, array $packCells, Grid $grid)
+	public function runPackAnalysis(array $blockLineCells, array $blockCells, array $lineCells, Grid $grid)
 	{
-		$blockHorEmptyCells = $grid->filterEmptyCells($definitiveCells);
-		if (count($blockHorEmptyCells) > 1) {
-			$blockHorCellsVariations = array_map(function($cell) {
-				return $cell->getVariations();
-			}, $blockHorEmptyCells);
 
-			$blockHorCellsUniqueVariations = array_values(array_unique($blockHorCellsVariations));
+		$blockLineVariations = array_reduce($blockLineCells, function($result, $cell){
+			$result = array_merge($result, $cell->getVariations());
+			return array_unique($result);
+		}, array());
 
-			if (count($blockHorCellsUniqueVariations) === 1) {
-				$blockHorCellsUniqueVariations = array_pop($blockHorCellsUniqueVariations);
-				if (count($blockHorEmptyCells) === count($blockHorCellsUniqueVariations)) {
-					$horCellsLeft = $grid->filterCells($packCells, $definitiveCells);
-					foreach($horCellsLeft as $horCellLeft) {
-						foreach($blockHorCellsUniqueVariations as $blockHorCellsUniqueVariation) {
-							$horCellLeft->removeVariation($blockHorCellsUniqueVariation);
-						}
-					}
-				}
+		$otherBlockCells = $grid->filterCells($blockCells, $blockLineCells);
+		$otherBlockVariations = array_reduce($otherBlockCells, function($result, $cell){
+			$result = array_merge($result, $cell->getVariations());
+			return array_unique($result);
+		}, array());
+		$variationsDiff = array_diff($blockLineVariations, $otherBlockVariations);
+
+		$otherLineCells = $grid->filterCells($lineCells, $blockLineCells);
+		foreach($otherLineCells as $cell) {
+			foreach($variationsDiff as $variation) {
+				$cell->removeVariation($variation);
 			}
-
 		}
+
 	}
 }

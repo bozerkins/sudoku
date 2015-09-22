@@ -3,7 +3,7 @@
 include __DIR__ . '/../vendor/autoload.php';
 
 
-$sequence = \Sudoku\Storage\Storage::get(2);
+$sequence = \Sudoku\Storage\Storage::get(3);
 
 $grid = new \Sudoku\Grid\Grid;
 $grid->populate($sequence);
@@ -15,6 +15,18 @@ $table->draw(true);
 
 $probabilityGrid = new \Sudoku\Grid\Grid;
 $probabilityGrid->populate($sequence);
+
+
+// $solver = new \Sudoku\Solver\Solver;
+// $solver->setGrid($probabilityGrid);
+// $solver->addTechnique(new \Sudoku\Solver\Technique\SinglePositionTechnique);
+// $solver->addTechnique(new \Sudoku\Solver\Technique\SingleCandidateTechnique);
+// $solver->solve();
+//
+// $table = new \Sudoku\Table\Table($probabilityGrid);
+// $table->draw();
+// $table = new \Sudoku\Table\Table($probabilityGrid);
+// $table->draw(true);
 
 $solver = new \Sudoku\Solver\Solver;
 $solver->setGrid($probabilityGrid);

@@ -156,8 +156,12 @@ class Grid
 
 	public function getBlockHorCells($number, $hor)
 	{
+		if (!in_array($hor, $this->getBlockHors($number))) {
+			throw new \ErrorException('Invalid hor ' . $hor . ' for block ' . $number);
+		}
+
 		$sequence = array();
-		foreach($this->getBlockHors($number) as $verIndex) {
+		foreach($this->getBlockVers($number) as $verIndex) {
 			$sequence[] = $this->getCell($hor, $verIndex);
 		}
 		return $sequence;
@@ -165,8 +169,11 @@ class Grid
 
 	public function getBlockVerCells($number, $ver)
 	{
+		if (!in_array($ver, $this->getBlockVers($number))) {
+			throw new \ErrorException('Invalid ver ' . $ver . ' for block ' . $number);
+		}
 		$sequence = array();
-		foreach($this->getBlockVers($number) as $horIndex) {
+		foreach($this->getBlockHors($number) as $horIndex) {
 			$sequence[] = $this->getCell($horIndex, $ver);
 		}
 		return $sequence;
