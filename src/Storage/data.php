@@ -40,5 +40,12 @@ $list[3] = array(
 	3,null,8,null,null,null,5,null,null,null,null,null,3,null,null,null,8,null,null,null,4,8,9,2,null,null,3
 );
 
+// double pairs sequence
+$list[4] = array(
+	9,3,4,null,6,null,null,5,null,null,null,6,null,null,4,9,2,3,null,null,8,9,null,null,null,4,6,8,null,null,5,4,6,null,null,7,
+	6,null,null,null,1,null,null,null,5,5,null,null,3,9,null,null,6,2,3,6,null,4,null,1,2,7,null,4,7,null,6,null,null,5,null,null,
+	null,8,null,null,null,null,6,3,4
+);
+
 
 return $list;
