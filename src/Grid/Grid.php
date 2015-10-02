@@ -179,6 +179,16 @@ class Grid
 		return $sequence;
 	}
 
+	public function getVerCellsExcludeBlock($ver, $number)
+	{
+		return $this->filterCells($this->getVerCells($ver), $this->getBlockVerCells($number, $ver));
+	}
+
+	public function getHorCellsExcludeBlock($hor, $number)
+	{
+		return $this->filterCells($this->getHorCells($hor), $this->getBlockHorCells($number, $hor));
+	}
+
 	public function getBlockNumber($hor, $ver)
 	{
 		$horSegment = intval($hor / $this->getBlockSize());
