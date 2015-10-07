@@ -62,4 +62,18 @@ $list[6] = array(
 	null,null,6,null,null,3,null,null,null,1,5,null,null,null,null,null,null,7,5,null,null,null
 );
 
+// very hard sequence
+// https://www.sudokuoftheday.com/dailypuzzles/solver/?did=28650
+$list[7] = array(
+	3,7,null,null,9,null,null,null,4,
+	4,null,null,null,null,1,null,null,null,
+	null,5,9,null,null,2,null,null,null,
+	1,null,3,null,8,null,null,null,9,
+	null,null,null,null,null,null,null,null,null,
+	5,null,null,null,7,null,8,null,6,
+	null,null,null,3,null,null,9,7,null,
+	null,null,null,8,null,null,null,null,2,
+	7,null,null,null,6,null,null,5,8
+);
+
 return $list;
