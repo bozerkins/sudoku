@@ -54,5 +54,12 @@ $list[5] = array(
 	null,null,null,8,null,5,null,null,null,1,null,5,null,null,6,9,8,4,null,null,8,2,null,null,3,null,5
 );
 
+// hard sequence
+// https://www.sudokuoftheday.com/dailypuzzles/solver/?did=28649
+$list[6] = array(
+	null,null,null,5,2,null,null,null,null,null,null,9,6,null,null,null,8,null,null,6,null,null,null,7,9,3,null,null,
+	1,null,null,null,8,null,5,null,2,null,null,7,1,4,null,null,6,null,9,null,2,null,null,null,4,null,null,8,5,3,null,
+	null,null,6,null,null,3,null,null,null,1,5,null,null,null,null,null,null,7,5,null,null,null
+);
 
 return $list;
