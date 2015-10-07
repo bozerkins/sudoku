@@ -12,7 +12,6 @@ class NakedPairsTechnique implements TechniqueInterface
 		// 2. ensure the lines exactly match
 		// 3. remove variations from other elements
 
-		$i = 3;
 		for($i = 0; $i < $grid->getSize(); $i++) {
 			$cells = $grid->getVerCells($i);
 			$this->runPackAnalysis($cells, $grid);
@@ -30,7 +29,19 @@ class NakedPairsTechnique implements TechniqueInterface
 				$cellsPairVariations[] = $cell->getVariations();
 			}
 		}
-		$uniqueCellsPairVariations = array_unique($cellsPairVariations);
+		$uniqueCellsPairVariations = array_reduce($cellsPairVariations, function($result, $pair) {
+			$exists = false;
+			foreach($result as $resultPair) {
+				if (count(array_diff($resultPair, $pair)) === 0) {
+					$exists = true;
+				}
+			}
+
+			if (!$exists) {
+				$result[] = $pair;
+			}
+			return $result;
+		}, array());
 
 		foreach($uniqueCellsPairVariations as $pairVariations) {
 			$pairVariationCells = [];
