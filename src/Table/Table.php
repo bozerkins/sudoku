@@ -13,7 +13,7 @@ class Table
 		$this->grid = $grid;
 	}
 
-	public function get($drawVariations = false)
+	public function get($drawVariations = false, $coords = false)
 	{
 		$html = '';
 		$html .= '<style>
@@ -29,16 +29,63 @@ class Table
 			width: 30px;
 			height: 30px;
 		}
-		td:nth-child(3n+1) {
-			border-left: 2px solid black;
+		/** highlight **/
+		table {
+		  overflow: hidden;
 		}
-		tr:nth-child(3n) {
-			border-bottom: 2px solid black;
+
+		tr:hover {
+		  background-color: #ffa;
 		}
+
+		td, th {
+		  position: relative;
+		}
+		td:hover::after,
+		th:hover::after {
+		  content: "";
+		  position: absolute;
+		  background-color: #ffa;
+		  left: 0;
+		  top: -5000px;
+		  height: 10000px;
+		  width: 100%;
+		  z-index: -1;
+		}
+		';
+		if ($coords) {
+			$html .= '
+			td:nth-child(3n+2) {
+				border-left: 2px solid black;
+			}
+			tr:nth-child(3n+1) {
+				border-bottom: 2px solid black;
+			}';
+		} else {
+			$html .= '
+			td:nth-child(3n+1) {
+				border-left: 2px solid black;
+			}
+			tr:nth-child(3n) {
+				border-bottom: 2px solid black;
+			}';
+		}
+		$html .='
 		</style>';
 		$html .= '<table border=1>';
+		if ($coords) {
+			$html .= '<tr>';
+			$html .= '<td>&nbsp;</td>';
+			foreach(range(0,8) as $num) {
+				$html .= '<td>' . $num . '</td>';
+			}
+			$html .= '</tr>';
+		}
 		for($i = 0; $i < $this->grid->getSize(); $i++) {
 			$html .= '<tr>';
+			if ($coords) {
+				$html .= '<td>' . $i . '</td>';
+			}
 			for($j = 0; $j < $this->grid->getSize(); $j++) {
 				$cell = $this->grid->getCell($i, $j);
 				$tdHtml = $cell->get();
@@ -58,8 +105,8 @@ class Table
 		return $html;
 	}
 
-	public function draw($variations = false)
+	public function draw($variations = false, $coords = false)
 	{
-		echo $this->get($variations);
+		echo $this->get($variations, $coords);
 	}
 }

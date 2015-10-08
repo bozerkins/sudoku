@@ -7,6 +7,8 @@ $sequence = \Sudoku\Storage\Storage::get(7);
 $grid = new \Sudoku\Grid\Grid;
 $grid->populate($sequence);
 
+$table = new \Sudoku\Table\Table($grid);
+$table->draw(true, false);
 
 $solver = new \Sudoku\Solver\Solver;
 $solver->setGrid($grid);
@@ -16,13 +18,13 @@ $solver->addTechnique(new \Sudoku\Solver\Technique\CandidateLinesTechnique);
 $solver->addTechnique(new \Sudoku\Solver\Technique\DoublePairsTechnique);
 $solver->addTechnique(new \Sudoku\Solver\Technique\NakedPairsTechnique);
 $solver->addTechnique(new \Sudoku\Solver\Technique\HiddenPairsTechnique);
+$solver->addTechnique(new \Sudoku\Solver\Technique\CrossWingsTechnique);
 $solver->solve();
 
 // $table = new \Sudoku\Table\Table($grid);
 // $table->draw();
 $table = new \Sudoku\Table\Table($grid);
-$solver->addTechnique(new \Sudoku\Solver\Technique\CrossWingsTechnique);
-$table->draw(true);
+$table->draw(true, false);
 
 // $solver = new \Sudoku\Solver\Solver;
 // $solver->setGrid($grid);
@@ -30,6 +32,6 @@ $table->draw(true);
 
 
 // $table = new \Sudoku\Table\Table($grid);
-// // $table->draw();
+// $table->draw();
 // $table = new \Sudoku\Table\Table($grid);
-// $table->draw(true);
+// $table->draw(true, true);
