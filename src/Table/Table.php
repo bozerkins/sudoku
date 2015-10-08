@@ -77,14 +77,14 @@ class Table
 			$html .= '<tr>';
 			$html .= '<td>&nbsp;</td>';
 			foreach(range(0,8) as $num) {
-				$html .= '<td>' . $num . '</td>';
+				$html .= '<td><span style="font-style: italic;">' . $num . '</span></td>';
 			}
 			$html .= '</tr>';
 		}
 		for($i = 0; $i < $this->grid->getSize(); $i++) {
 			$html .= '<tr>';
 			if ($coords) {
-				$html .= '<td>' . $i . '</td>';
+				$html .= '<td><span style="font-style: italic;">' . $i . '</span></td>';
 			}
 			for($j = 0; $j < $this->grid->getSize(); $j++) {
 				$cell = $this->grid->getCell($i, $j);
