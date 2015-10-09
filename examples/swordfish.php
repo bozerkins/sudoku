@@ -16,6 +16,7 @@ $solver->addTechnique(new \Sudoku\Solver\Technique\DoublePairsTechnique);
 $solver->addTechnique(new \Sudoku\Solver\Technique\NakedPairsTechnique);
 $solver->addTechnique(new \Sudoku\Solver\Technique\HiddenPairsTechnique);
 $solver->addTechnique(new \Sudoku\Solver\Technique\CrossWingsTechnique);
+$solver->addTechnique(new \Sudoku\Solver\Technique\SwordfishTechnique);
 $solver->solve();
 
 // $table = new \Sudoku\Table\Table($grid);
@@ -25,7 +26,7 @@ $table->draw(true, true);
 
 $solver = new \Sudoku\Solver\Solver;
 $solver->setGrid($grid);
-$solver->addTechnique(new \Sudoku\Solver\Technique\SwordfishTechnique);
+// $solver->addTechnique(new \Sudoku\Solver\Technique\SwordfishTechnique);
 $solver->solve();
 
 

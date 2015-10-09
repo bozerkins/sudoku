@@ -13,13 +13,25 @@ class SwordfishTechnique implements TechniqueInterface
 		// 3. retrieve corelated pairs
 		// 4. remove opposite orientation variation occurencies
 
-		$variation = 8;
-		$line = 0;
+		foreach($grid->getPossibleValues() as $variation) {
+			$this->runPackAnalysis($variation, $grid, 'ver');
+			$this->runPackAnalysis($variation, $grid, 'hor');
+		}
+	}
+
+	public function runPackAnalysis($variation, Grid $grid, $type)
+	{
 		$pairs = array();
 		// get pairs for variation
-		foreach(range($line + 1, $grid->getSize() - 1) as $line) {
+		for($i = 0; $i < $grid->getSize(); $i++) {
 			$variationCells = array();
-			foreach($grid->getVerCells($line) as $cell) {
+			if ($type === 'ver') {
+				$cells = $grid->getVerCells($i);
+			}
+			if ($type === 'hor') {
+				$cells = $grid->getHorCells($i);
+			}
+			foreach($cells as $cell) {
 				if (in_array($variation, $cell->getVariations())) {
 					$variationCells[] = $cell;
 				}
@@ -32,40 +44,83 @@ class SwordfishTechnique implements TechniqueInterface
 				$pairs[] = $pair;
 			}
 		}
-		// find first connected pair
-		$connected = null;
+
+		// form connections
+		$chains = array();
 		foreach($pairs as $pair) {
-			foreach($pairs as $pairToCompare) {
-				$lineDiff = array_diff($pair['hors'], $pairToCompare['hors']);
-				if (count($lineDiff) === 1) {
-					$connected = $pair; break;
+			$matched = false;
+			foreach($chains as &$chain) {
+				if ($type === 'ver' && count(array_diff($pair['hors'], $chain['hors'])) >= 2) {
+					continue;
 				}
+				if ($type === 'hor' && count(array_diff($pair['vers'], $chain['vers'])) >= 2) {
+					continue;
+				}
+
+				$chain['cells'] = array_merge($chain['cells'], $pair['cells']);
+				$chain['hors'] = array_merge($chain['hors'], $pair['hors']);
+				$chain['vers'] = array_merge($chain['vers'], $pair['vers']);
+				$matched = true;
 			}
-			if ($connected) {
-				break;
+			unset($chain);
+
+			if (!$matched) {
+				$chain = array();
+				$chain['cells'] = $pair['cells'];
+				$chain['hors'] = $pair['hors'];
+				$chain['vers'] = $pair['vers'];
+				$chains[] = $chain;
 			}
 		}
-		// find chain
-		$chain = array();
-		$chain[] = $connected;
-		foreach($chain as $pair) {
-			foreach($pairs as $pairToCompare) {
-				$lineDiff = array_diff($pair['hors'], $pairToCompare['hors']);
-				if (count($lineDiff) === 1) {
-					$connected = $pairToCompare; break;
-				}
+
+		// verify each chain
+		$validChains = array();
+		foreach($chains as $chain) {
+			if ($type === 'ver') {
+				$lines = $chain['hors'];
 			}
-			if ($connected) {
-				break;
+			if ($type === 'hor') {
+				$lines = $chain['vers'];
+			}
+			$invalidCounts = array_filter(array_count_values($lines), function($amount){
+				return $amount % 2 !== 0;
+			});
+			if (!$invalidCounts) {
+				$validChains[] =  $chain;
 			}
 		}
-		\Sudoku\Dumper::out($connected);
-		exit;
 
-	}
+		// find chain with max pairs, where count > 2
+		$theChain = null;
+		$maxCount = 0;
+		foreach($validChains as $chain) {
+			$amount = count($chain['cells']);
+			if ($amount > 2 && $amount > $maxCount) {
+				$maxCount = $amount;
+				$theChain = $chain;
+			}
+		}
 
-	public function runPackAnalysis(array $cells, Grid $grid, $i, $type)
-	{
-
+		// if chain exists - do the clearing
+		if ($theChain) {
+			if ($type === 'ver') {
+				$lines = array_unique($theChain['hors']);
+			}
+			if ($type === 'hor') {
+				$lines = array_unique($theChain['vers']);
+			}
+			foreach($lines as $line) {
+				if ($type === 'ver') {
+					$lineCells = $grid->getHorCells($line);
+				}
+				if ($type === 'hor') {
+					$lineCells = $grid->getVerCells($line);
+				}
+				$otherCells = $grid->filterCells($lineCells, $theChain['cells']);
+				foreach($otherCells as $cell) {
+					$cell->removeVariation($variation);
+				}
+			}
+		}
 	}
 }
