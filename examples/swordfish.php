@@ -26,7 +26,6 @@ $table->draw(true, true);
 
 $solver = new \Sudoku\Solver\Solver;
 $solver->setGrid($grid);
-// $solver->addTechnique(new \Sudoku\Solver\Technique\SwordfishTechnique);
 $solver->solve();
 
 
