@@ -45,7 +45,7 @@ class NakedPairsTechnique implements TechniqueInterface
 
 
 		foreach($uniqueCellsPairVariations as $pairVariations) {
-			$pairVariationCells = [];
+			$pairVariationCells = array();
 			foreach($cells as $cell) {
 				if (count(array_diff($pairVariations, $cell->getVariations())) === 0 && count(array_diff($cell->getVariations(), $pairVariations)) === 0) {
 					$pairVariationCells[] = $cell;

@@ -2,7 +2,7 @@
 
 namespace Sudoku\Grid;
 
-class Cell
+class Cell implements CellModificationInterface
 {
 	protected $hor;
 	protected $ver;

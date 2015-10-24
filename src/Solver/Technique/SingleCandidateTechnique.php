@@ -4,8 +4,13 @@ namespace Sudoku\Solver\Technique;
 
 use Sudoku\Grid\Grid;
 
-class SingleCandidateTechnique implements TechniqueInterface
+class SingleCandidateTechnique extends TechniqueAbstract
 {
+	public function analyze(Grid $grid)
+	{
+		exit('analyze! implement!');
+	}
+
 	public function fillWhatYouCan(Grid $grid)
 	{
 		for($i = 0; $i < $grid->getSize(); $i++) {

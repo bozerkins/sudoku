@@ -25,6 +25,7 @@ $table = new \Sudoku\Table\Table($grid);
 $table->draw(true, true);
 
 $solver = new \Sudoku\Solver\Solver;
+$solver->addTechnique(new \Sudoku\Solver\Technique\ForcingChainsTechnique);
 $solver->setGrid($grid);
 $solver->solve();
 
